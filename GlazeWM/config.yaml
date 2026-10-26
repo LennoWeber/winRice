@@ -1,0 +1,212 @@
+# GlazeWM-Config: nur automatisches Tiling, der Windows-Look bleibt unveraendert.
+# mod = Windows-Taste (lwin)
+#
+#   mod + Enter            Terminal (Windows Terminal)
+#   mod + B                Zen Browser
+#   mod + S                Windows-Einstellungen
+#   mod + Q                Fenster schliessen
+#   mod + F                Fenster maximieren / zurueck
+#   mod + 1..5             Workspace wechseln
+#   mod + Shift + 1..5     Fenster auf Workspace schieben und mitgehen
+#   mod + Alt + 1..5       Fenster auf Workspace schieben, aber hierbleiben
+#   mod + Pfeiltasten      Fokus zwischen Fenstern wechseln
+#   mod + Shift + Pfeile   Fenster im Layout verschieben
+#   Alt + V                Tiling-Richtung wechseln (naechstes Fenster rechts/unten)
+#   Alt + R                Groessen-Modus (Pfeiltasten/HJKL, Esc beendet)
+#   Alt + Leertaste        Fenster floating <-> tiling
+#   mod + Shift + R        Config neu laden
+#   mod + Shift + E        GlazeWM beenden
+#   mod + Shift + P        Alle Shortcuts pausieren / fortsetzen
+
+general:
+  # Keine Leiste (Zebar) starten -> Windows-Taskleiste bleibt wie sie ist
+  startup_commands: []
+  shutdown_commands: []
+  config_reload_commands: []
+  focus_follows_cursor: false
+  toggle_workspace_on_refocus: false
+  cursor_jump:
+    # Maus nicht automatisch bewegen (Windows-Verhalten)
+    enabled: false
+    trigger: 'monitor_focus'
+  hide_method: 'cloak'
+  # false = Taskleiste zeigt nur Fenster des aktuellen Workspaces (wie virtuelle Desktops)
+  show_all_in_taskbar: false
+
+gaps:
+  scale_with_dpi: true
+  # Keine Abstaende zwischen Fenstern
+  inner_gap: '0px'
+  outer_gap:
+    top: '0px'
+    right: '0px'
+    bottom: '0px'
+    left: '0px'
+
+# Alle optischen Effekte aus
+window_effects:
+  focused_window:
+    border:
+      enabled: false
+      color: '#8dbcff'
+    hide_title_bar:
+      enabled: false
+    corner_style:
+      enabled: false
+      style: 'square'
+    transparency:
+      enabled: false
+      opacity: '95%'
+  other_windows:
+    border:
+      enabled: false
+      color: '#a1a1a1'
+    hide_title_bar:
+      enabled: false
+    corner_style:
+      enabled: false
+      style: 'square'
+    transparency:
+      enabled: false
+      opacity: '0%'
+
+window_behavior:
+  initial_state: 'tiling'
+  state_defaults:
+    floating:
+      centered: true
+      shown_on_top: false
+    fullscreen:
+      # true = mod+F maximiert (Taskleiste bleibt sichtbar)
+      # false = echtes Vollbild ueber der Taskleiste
+      maximized: true
+      shown_on_top: false
+
+workspaces:
+  - name: '1'
+  - name: '2'
+  - name: '3'
+  - name: '4'
+  - name: '5'
+
+window_rules:
+  - commands: ['ignore']
+    match:
+      # Bild-im-Bild-Fenster von Browsern nicht tilen
+      - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
+        window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }
+      # PowerToys-Hilfsfenster
+      - window_process: { equals: 'PowerToys' }
+        window_class: { regex: 'HwndWrapper\[PowerToys\.PowerAccent.*?\]' }
+      - window_title: { equals: 'Command Palette' }
+        window_class: { equals: 'WinUIDesktopWin32WindowClass' }
+      - window_process: { equals: 'PowerToys' }
+        window_title: { regex: '.*? - Peek' }
+      # Office-Hilfsfenster
+      - window_process: { equals: 'EXCEL' }
+        window_class: { not_regex: 'XLMAIN' }
+      - window_process: { equals: 'WINWORD' }
+        window_class: { not_regex: 'OpusApp' }
+      - window_process: { equals: 'POWERPNT' }
+        window_class: { not_regex: 'PPTFrameClass' }
+
+binding_modes:
+  - name: 'resize'
+    keybindings:
+      - commands: ['resize --width -2%']
+        bindings: ['h', 'left']
+      - commands: ['resize --width +2%']
+        bindings: ['l', 'right']
+      - commands: ['resize --height +2%']
+        bindings: ['k', 'up']
+      - commands: ['resize --height -2%']
+        bindings: ['j', 'down']
+      - commands: ['wm-disable-binding-mode --name resize']
+        bindings: ['escape', 'enter', 'alt+r']
+
+keybindings:
+  # --- Programme ---
+  - commands: ['shell-exec wt']
+    bindings: ['lwin+enter']
+  - commands: ['shell-exec __ZEN_PATH__']
+    bindings: ['lwin+b']
+  - commands: ['shell-exec explorer ms-settings:']
+    bindings: ['lwin+s']
+
+  # --- Fenster schliessen / maximieren ---
+  - commands: ['close']
+    bindings: ['lwin+q']
+  - commands: ['toggle-fullscreen']
+    bindings: ['lwin+f']
+
+  # --- Fokus wechseln ---
+  - commands: ['focus --direction left']
+    bindings: ['lwin+left']
+  - commands: ['focus --direction right']
+    bindings: ['lwin+right']
+  - commands: ['focus --direction up']
+    bindings: ['lwin+up']
+  - commands: ['focus --direction down']
+    bindings: ['lwin+down']
+
+  # --- Fenster im Layout verschieben ---
+  - commands: ['move --direction left']
+    bindings: ['lwin+shift+left']
+  - commands: ['move --direction right']
+    bindings: ['lwin+shift+right']
+  - commands: ['move --direction up']
+    bindings: ['lwin+shift+up']
+  - commands: ['move --direction down']
+    bindings: ['lwin+shift+down']
+
+  # --- Workspaces wechseln ---
+  - commands: ['focus --workspace 1']
+    bindings: ['lwin+1']
+  - commands: ['focus --workspace 2']
+    bindings: ['lwin+2']
+  - commands: ['focus --workspace 3']
+    bindings: ['lwin+3']
+  - commands: ['focus --workspace 4']
+    bindings: ['lwin+4']
+  - commands: ['focus --workspace 5']
+    bindings: ['lwin+5']
+
+  # --- Fenster verschieben UND mitgehen ---
+  - commands: ['move --workspace 1', 'focus --workspace 1']
+    bindings: ['lwin+shift+1']
+  - commands: ['move --workspace 2', 'focus --workspace 2']
+    bindings: ['lwin+shift+2']
+  - commands: ['move --workspace 3', 'focus --workspace 3']
+    bindings: ['lwin+shift+3']
+  - commands: ['move --workspace 4', 'focus --workspace 4']
+    bindings: ['lwin+shift+4']
+  - commands: ['move --workspace 5', 'focus --workspace 5']
+    bindings: ['lwin+shift+5']
+
+  # --- Fenster verschieben, aber hierbleiben ---
+  - commands: ['move --workspace 1']
+    bindings: ['lwin+alt+1']
+  - commands: ['move --workspace 2']
+    bindings: ['lwin+alt+2']
+  - commands: ['move --workspace 3']
+    bindings: ['lwin+alt+3']
+  - commands: ['move --workspace 4']
+    bindings: ['lwin+alt+4']
+  - commands: ['move --workspace 5']
+    bindings: ['lwin+alt+5']
+
+  # --- Tiling-Extras (GlazeWM-Standard auf Alt) ---
+  - commands: ['toggle-tiling-direction']
+    bindings: ['alt+v']
+  - commands: ['wm-enable-binding-mode --name resize']
+    bindings: ['alt+r']
+  - commands: ['toggle-floating --centered']
+    bindings: ['alt+space']
+
+  # --- Verwaltung ---
+  - commands: ['wm-reload-config']
+    bindings: ['lwin+shift+r']
+  - commands: ['wm-exit']
+    bindings: ['lwin+shift+e']
+  - commands: ['wm-toggle-pause']
+    bindings: ['lwin+shift+p']
